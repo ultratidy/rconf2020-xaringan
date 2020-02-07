@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>RStudio rconf::2020</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Josh Johnston" />
+    <meta name="date" content="2020-02-06" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# RStudio rconf::2020
+### Josh Johnston
+### Ultradent Products, Inc.
+### 02/06/2020
+
+---
+
+
+## Things I Learned @ rconf::2020
+
+San Francisco has a homeless problem.  Ask Marianne about it.  
+
+--
+
+Hex stickers are totally a thing.  Look at Nick's laptop.  
+
+--
+
+The first two days I attended the applied machine learning workshop.  Course material for all workshops is available here:
+&lt;https://github.com/rstudio-conf-2020&gt;.
+
+--
+
+The last two days consistented of four concurrent lecture tracks.  It was hectic swapping rooms with 2,500 people every few minutes.  I'll share some of the highlights.    
+
+---
+
+## Why Use R for Predictive Modeling?
+
+&lt;br&gt;
+&lt;br&gt;
+* R has cutting edge model capabilities
+
+&lt;br&gt;
+&lt;br&gt;
+
+* R allows you to easily incorporate the best of the other languages
+--You can access tensorflow, keras, python, or just about anything else without leaving the R environment
+
+---
+
+## Downsides to modeling in R
+
+&lt;br&gt;
+
+- R is a data analysis language, not a high performance deployment language like C.  
+
+&lt;br&gt;
+
+- R should be treated like a prototyping language.  
+&lt;br&gt;
+
+- Production application deployment should be done in a more appropriate language using models that were proven in R. 
+
+---
+
+background-image: url(images/tidymodels2.png)
+background-position: 90% 5%
+background-size: 8%
+
+# Caret to Tidymodels
+
+&lt;br&gt;
+&lt;br&gt;
+
+The modeling workshop mostly highlighted the new `tidymodels` package created by Max Kuhn.  
+
+--
+&lt;br&gt;
+
+&lt;font color="red"&gt;`tidymodels`&lt;/font&gt; was developed as a successor to the &lt;font color="red"&gt;`caret`&lt;/font&gt; package which Max also wrote
+&lt;br&gt;
+*(Caret is short for **C**lassification **A**nd **RE**gression **T**raining)*
+
+
+
+---
+
+
+
+## &lt;font color="red"&gt;`tidymodels`&lt;/font&gt; Package
+
+This is the basic workflow to create a model using the tidymodels package.  
+
+.center[&lt;img src="images/tidymodels.png" alt="tidymodels" width="70%"&gt;]
+
+
+
+---
+
+## Predictive Modeling Process:
+
+1. Estimating model parameters (What predictors to select?)
+
+2. Determine tuning parameters (# of trees, # of folds, etc.)
+
+3. Model selection and model comparison (lm, MARS, randomForest)
+
+4. Evaluating model performance (RSME, runtime)
+
+&lt;b&gt;Predictive modeling should be considered a marathon, not a short sprint. &lt;/b&gt;
+
+---
+
+## How do we "spend" data? 
+
+The recommended practice for introducing data to a model is splitting
+
+
+- &lt;b&gt;Training Set&lt;/b&gt;: Used to estimate model parameters
+
+- &lt;b&gt;Test Set&lt;/b&gt;: Used to get an independent assessment of model efficacy.  Should not be used during model training.
+
+.center[&lt;img src="images/resample.png" alt="tidymodels" width="50%"&gt;]
+
+
+---
+
+## Ways to Split Data:
+
+- Random Sampling
+
+- Stratified Sampling
+
+- Date Based Sampling
+
+- Sample from predictor distributions
+
+---
+
+## Ames Iowa Housing Data
+
+The &lt;font color="red"&gt;`AmesHousing`&lt;/font&gt; package will be used to demonstrate features of the tidymodels package.  
+
+The &lt;font color="red"&gt;`initial_split`&lt;/font&gt; function can be used to break data into training and test sets.  
+
+
+
+
+```r
+nrow(ames)
+```
+
+```
+## [1] 2930
+```
+
+```r
+*(data_split &lt;- initial_split(ames))
+```
+
+```
+## &lt;2198/732/2930&gt;
+```
+
+```r
+ames_train &lt;- training(data_split)
+ames_test &lt;- testing(data_split)
+                  
+nrow(ames_train)/nrow(ames)
+```
+
+```
+## [1] 0.7501706
+```
+
+```r
+#nrow(ames_test)/nrow(ames)
+```
+
+---
+
+## Linear Regression Model in R
+
+Who has run a linear regression in R?  How did you do it?
+
+--
+
+
+```r
+*simple_lm &lt;- lm(Sale_Price ~ Longitude + Latitude, data = ames_train)
+summary(simple_lm)
+```
+
+```
+## 
+## Call:
+## lm(formula = Sale_Price ~ Longitude + Latitude, data = ames_train)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -144825  -47292  -20007   33286  539327 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -130891465    6909985  -18.94   &lt;2e-16 ***
+## Longitude      -808064      61597  -13.12   &lt;2e-16 ***
+## Latitude       1318037      85577   15.40   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 74000 on 2195 degrees of freedom
+## Multiple R-squared:  0.1525,	Adjusted R-squared:  0.1517 
+## F-statistic: 197.4 on 2 and 2195 DF,  p-value: &lt; 2.2e-16
+```
+
+
+---
+
+## Model Function Differences
+
+`lm()` is not the only way to perform a linear regression in R
+
+- &lt;font color="red"&gt;`glmnet`&lt;/font&gt; is used for regularized regression
+
+- &lt;font color="red"&gt;`stan`&lt;/font&gt; is used for Bayesian regression
+
+- &lt;font color="red"&gt;`keras`&lt;/font&gt; is for regression using tensorflow
+
+- &lt;font color="red"&gt;`spark`&lt;/font&gt; is often used for large data sets
+
+Each function has it's own syntax that is difficult to remember which makes it difficult to do quick comparisons between models.  
+
+
+---
+
+background-image: url(images/parsnip.png)
+background-position: 90% 5%
+background-size: 8%
+
+## Parsnip to the Rescure
+
+&lt;font color="red"&gt;`parsnip`&lt;/font&gt; put a wrapper around all the modeling functions to standarize the syntax
+
+&lt;br&gt;
+&lt;br&gt;
+
+To specify a model with parsnip:
+
+- Pick a `model`
+&lt;br&gt;
+&lt;br&gt;
+- Set the `engine`
+&lt;br&gt;
+&lt;br&gt;
+- Set the `mode`
+
+---
+
+## Pick a Model
+
+Models that work with parsnip can be found here:
+&lt;https://tidymodels.github.io/parsnip/articles/articles/Models.html&gt; 
+
+
+```r
+lm_spec &lt;- linear_reg() %&gt;%               # Pick a model  
+           set_engine(engine = "lm") %&gt;%  # set engine
+           set_mode(mode = "regression")  # set mode
+
+# Train the model by using the fit function
+(lm_fit &lt;- fit(lm_spec, log10(Sale_Price) ~ Longitude + Latitude, data = ames_train))
+```
+
+```
+## parsnip model object
+## 
+## Fit time:  0ms 
+## 
+## Call:
+## stats::lm(formula = formula, data = data)
+## 
+## Coefficients:
+## (Intercept)    Longitude     Latitude  
+##    -308.517       -2.063        2.867
+```
+
+---
+
+## Prediction
+
+Typically you should not jump to predicting your test set at this point.  You should use resampling methods (e.g. cross-validation) to evaluate the model.  But for now we will jump to prediction to show how the code works.
+
+
+
+```r
+*price_pred &lt;- predict(lm_fit, new_data = ames_test)
+price_pred %&gt;% slice(1:5)
+```
+
+```
+## # A tibble: 5 x 1
+##   .pred
+##   &lt;dbl&gt;
+## 1  5.29
+## 2  5.28
+## 3  5.27
+## 4  5.26
+## 5  5.27
+```
+
+---
+
+## Prediction Cont.
+
+
+
+```r
+price_pred &lt;- price_pred %&gt;% 
+                bind_cols(ames_test) %&gt;% 
+                mutate(log_price = log10(Sale_Price)) %&gt;% 
+                dplyr::select(.pred, log_price) 
+price_pred %&gt;% slice(1:5)                
+```
+
+```
+## # A tibble: 5 x 2
+##   .pred log_price
+##   &lt;dbl&gt;     &lt;dbl&gt;
+## 1  5.29      5.28
+## 2  5.28      5.37
+## 3  5.27      5.33
+## 4  5.26      5.60
+## 5  5.27      5.32
+```
+
+```r
+*rmse(price_pred, truth = log_price, estimate = .pred)
+```
+
+```
+## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 rmse    standard       0.162
+```
+
+---
+
+## Classification Models
+
+A classification tree searches through each preidctor to find a value for each variable the best splits the data into two groups.  
+
+These are nice as they allow the use of both continuous and categorical data to fit the model.  
+
+&lt;br&gt;
+&lt;br&gt;
+.center[&lt;img src="images/classification.png" alt="tidymodels" width="75%"&gt;]
+
+---
+
+## Classification Models
+
+
+```r
+library(randomForest)
+* (rf_fit=randomForest(mpg ~ ., data=mtcars)) 
+```
+
+```
+## 
+## Call:
+##  randomForest(formula = mpg ~ ., data = mtcars) 
+##                Type of random forest: regression
+##                      Number of trees: 500
+## No. of variables tried at each split: 3
+## 
+##           Mean of squared residuals: 5.378799
+##                     % Var explained: 84.71
+```
+
+---
+
+## # of Trees
+
+
+```r
+# Plot of MSE vs # of trees used to fit the model.  
+*plot(randomForest(mpg ~ ., mtcars, keep.forest=FALSE, ntree=100), log="y")
+```
+
+![](rconf2020_xaringan_files/figure-html/randomf2-1.png)&lt;!-- --&gt;
+
+---
+
+## Variable Importance Plot
+
+
+```r
+library(vip)
+vip(rf_fit)
+```
+
+![](rconf2020_xaringan_files/figure-html/randomf3-1.png)&lt;!-- --&gt;
+
+---
+
+## Other Topics Covered in Max's Workshop:
+
+.pull-left[
+- Interactions
+- Zero Variance Factors
+- Principle Component Analysis
+- Resampling - splitting methods for training / test data sets
+- V-Folds Cross Validation
+- K- Nearest Neighbors
+- Tuning parameters
+- Recipes
+]
+
+.pull-right[
+- Overfitting
+- Grid Search
+- Glmnet Models
+- Parallel Processing
+- MARS - Multivariate Adaptive Regression Splines
+- Hinge Functions
+- Boosting
+
+]
+
+---
+
+
+class: inverse, middle, center
+
+# Conference Lecture Topics
+
+
+---
+
+## Package Development
+
+Several lectures discuss packages that were created to solve specific user issues.  My take away was that I need to learn how to create a package so that I can relate to the problems and solutions discussed.  
+
+Hadley frequently says if you have to copy and paste more than twice, you should write a function.  A package is a great way to store all the functions that you frequently use in your job.  
+
+
+Rmarkdown, Git, and Roxygen2 make creating a package fairly easy.  Hadley wrote a book that details how to use packages in R: &lt;http://r-pkgs.had.co.nz&gt;.
+
+
+
+---
+
+background-image: url(images/shiny.png)
+background-position: 90% 5%
+background-size: 8%
+
+
+## Shiny App
+
+&lt;br&gt;
+
+Shiny is an R package that allows you to create interactive web applications.  These could be great applications for business unit metrics.  
+
+&lt;br&gt;
+
+There are lots of free resources on the web with Shiny tutorials.  
+&lt;https://bookdown.org/hadrien/how_to_build_a_shiny_app_from_scratch/&gt;
+
+**DEMO:** My Shiny app for NaF trends by batch code.
+
+
+---
+
+background-image: url(images/rstudio_git.png)
+background-position: 90% 5%
+background-size: 16%
+
+
+
+## Git / Github
+
+&lt;br&gt;
+&lt;br&gt;
+
+As you get serious about coding, you need to setup a github repository for storing, versioning, and sharing code.  Rstudio has some neat Github integration that makes it easy to store your projects and files in the cloud and access them anywhere.  
+
+
+
+---
+
+background-image: url(images/rmarkdown.png)
+background-position: 90% 5%
+background-size: 8%
+
+
+## Rmarkdown 
+
+&lt;br&gt;
+&lt;br&gt;
+
+Rmarkdown has many more capabilities that I realized.  **I created this slide deck in Rmarkdown.**
+&lt;br&gt;
+&lt;br&gt;
+
+Marianne attended the Rmarkdown workshop, so I'll let her elaborate on some neat features of Markdown.  
+
+
+---
+
+background-image: url(images/sql.png)
+background-position: 75% 80%
+background-size: 28%
+
+
+## SQLDF
+
+Ian Cook gave a great talk about switching between dplyr and sql.  While there are many functions that take SQL code and put it into R, there are not many options for execting SQL commands on R objects.  
+
+&lt;br&gt;
+
+sqldf() transparently sets up a database, imports the data frames into that database, performs the SQL statement, then returns the result as a data frame to R.
+
+---
+
+## Computer System Validation
+
+&lt;br&gt;
+
+Ellis Hughes gave an intresting lecture on how he uses R to automate his computer system validations using rmarkdown, testthat, and roxygen2.  
+
+&lt;br&gt;
+&lt;br&gt;
+
+Link to slides:
+&lt;https://thebioengineer.github.io/validation/&gt;
+
+
+---
+
+## Using R to Create Reproducible Engineering Test Reports
+
+&lt;br&gt;
+
+Ana Santos presented on how she uses Rmarkdown to create process validation IOQ and PQ reports at Biosense Webster.
+
+&lt;br&gt;
+
+She didn't share the slides from this presentation though.  
+
+---
+
+## livecode
+
+&lt;br&gt;
+
+Colin Rundel presented on how to broadcast live coding sessions.  
+
+&lt;br&gt;
+
+Link to slides:
+&lt;http://rundel.github.io/Presentations/RStudioConf2020/RStudioConf2020.html#1&gt;
+
+
+---
+
+background-image: url(images/cheat.png)
+background-position: 50% 90%
+background-size: 45%
+
+##Cheat Sheets
+
+RStudio has some helpful cheat sheets in case you struggle with function syntax.  
+
+
+---
+
+background-image: url(images/debug.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+background-image: url(images/brood.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+background-image: url(images/turnoff.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+background-image: url(images/reprex.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+background-image: url(images/reprex2.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+background-image: url(images/needle.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+background-image: url(images/reprex3.png)
+background-position: 50% 50%
+background-size: contain
+
+---
+
+class: inverse, middle, center
+
+## The End!
+
+&lt;p&gt;&lt;img src="images/hexes.png" alt="Example" width="22%", align = "left"&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="images/lobby.png" alt="Example" width="35%", align = "right"&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="images/ballroom.png" alt="Example" width="38%", align = "bottom"&gt;&lt;/p&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLanguage": "R",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
