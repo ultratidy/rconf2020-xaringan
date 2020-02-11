@@ -4,7 +4,7 @@
     <title>RStudio rconf::2020</title>
     <meta charset="utf-8" />
     <meta name="author" content="Josh Johnston" />
-    <meta name="date" content="2020-02-06" />
+    <meta name="date" content="2020-02-12" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -35,7 +35,7 @@ The first two days I attended the applied machine learning workshop.  Course mat
 
 --
 
-The last two days consistented of four concurrent lecture tracks.  It was hectic swapping rooms with 2,500 people every few minutes.  I'll share some of the highlights.    
+The last two days consistented of 104 lectures spread between four conference rooms.  It was hectic swapping rooms with 2,500 people every few minutes.  I'll share some of the highlights.    
 
 ---
 
@@ -58,10 +58,10 @@ The last two days consistented of four concurrent lecture tracks.  It was hectic
 &lt;br&gt;
 
 - R is a data analysis language, not a high performance deployment language like C.  
-
 &lt;br&gt;
 
 - R should be treated like a prototyping language.  
+
 &lt;br&gt;
 
 - Production application deployment should be done in a more appropriate language using models that were proven in R. 
@@ -77,7 +77,7 @@ background-size: 8%
 &lt;br&gt;
 &lt;br&gt;
 
-The modeling workshop mostly highlighted the new `tidymodels` package created by Max Kuhn.  
+The modeling workshop mostly highlighted the new &lt;font color="red"&gt;`tidymodels`&lt;/font&gt; package created by Max Kuhn.  
 
 --
 &lt;br&gt;
@@ -99,7 +99,7 @@ This is the basic workflow to create a model using the tidymodels package.
 .center[&lt;img src="images/tidymodels.png" alt="tidymodels" width="70%"&gt;]
 
 
-
+&lt;!--
 ---
 
 ## Predictive Modeling Process:
@@ -114,6 +114,7 @@ This is the basic workflow to create a model using the tidymodels package.
 
 &lt;b&gt;Predictive modeling should be considered a marathon, not a short sprint. &lt;/b&gt;
 
+--&gt;
 ---
 
 ## How do we "spend" data? 
@@ -203,19 +204,19 @@ summary(simple_lm)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -144825  -47292  -20007   33286  539327 
+## -145300  -47852  -19313   34009  538137 
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -130891465    6909985  -18.94   &lt;2e-16 ***
-## Longitude      -808064      61597  -13.12   &lt;2e-16 ***
-## Latitude       1318037      85577   15.40   &lt;2e-16 ***
+## (Intercept) -134388082    6944609  -19.35   &lt;2e-16 ***
+## Longitude      -818700      61730  -13.26   &lt;2e-16 ***
+## Latitude       1377528      86042   16.01   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 74000 on 2195 degrees of freedom
-## Multiple R-squared:  0.1525,	Adjusted R-squared:  0.1517 
-## F-statistic: 197.4 on 2 and 2195 DF,  p-value: &lt; 2.2e-16
+## Residual standard error: 74460 on 2195 degrees of freedom
+## Multiple R-squared:  0.1591,	Adjusted R-squared:  0.1583 
+## F-statistic: 207.7 on 2 and 2195 DF,  p-value: &lt; 2.2e-16
 ```
 
 
@@ -279,14 +280,14 @@ lm_spec &lt;- linear_reg() %&gt;%               # Pick a model
 ```
 ## parsnip model object
 ## 
-## Fit time:  0ms 
+## Fit time:  20ms 
 ## 
 ## Call:
 ## stats::lm(formula = formula, data = data)
 ## 
 ## Coefficients:
 ## (Intercept)    Longitude     Latitude  
-##    -308.517       -2.063        2.867
+##    -314.150       -2.057        3.015
 ```
 
 ---
@@ -307,9 +308,9 @@ price_pred %&gt;% slice(1:5)
 ##   .pred
 ##   &lt;dbl&gt;
 ## 1  5.29
-## 2  5.28
-## 3  5.27
-## 4  5.26
+## 2  5.29
+## 3  5.28
+## 4  5.28
 ## 5  5.27
 ```
 
@@ -332,10 +333,10 @@ price_pred %&gt;% slice(1:5)
 ##   .pred log_price
 ##   &lt;dbl&gt;     &lt;dbl&gt;
 ## 1  5.29      5.28
-## 2  5.28      5.37
-## 3  5.27      5.33
-## 4  5.26      5.60
-## 5  5.27      5.32
+## 2  5.29      5.29
+## 3  5.28      5.37
+## 4  5.28      5.25
+## 5  5.27      5.23
 ```
 
 ```r
@@ -346,7 +347,7 @@ price_pred %&gt;% slice(1:5)
 ## # A tibble: 1 x 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 rmse    standard       0.162
+## 1 rmse    standard       0.161
 ```
 
 ---
@@ -379,8 +380,8 @@ library(randomForest)
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 3
 ## 
-##           Mean of squared residuals: 5.378799
-##                     % Var explained: 84.71
+##           Mean of squared residuals: 5.688671
+##                     % Var explained: 83.83
 ```
 
 ---
@@ -570,7 +571,7 @@ Link to slides:
 ---
 
 background-image: url(images/cheat.png)
-background-position: 50% 90%
+background-position: 50% 80%
 background-size: 45%
 
 ##Cheat Sheets
