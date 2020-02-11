@@ -2,7 +2,7 @@
 title: "RStudio rconf::2020"
 author: "Josh Johnston"
 institute: "Ultradent Products, Inc."
-date: "02/06/2020"
+date: "02/12/2020"
 output:
   xaringan::moon_reader:
     #css: ["default", "assets/css/aml-theme.css", "assets/css/aml-fonts.css"]
@@ -34,7 +34,7 @@ The first two days I attended the applied machine learning workshop.  Course mat
 
 --
 
-The last two days consistented of four concurrent lecture tracks.  It was hectic swapping rooms with 2,500 people every few minutes.  I'll share some of the highlights.    
+The last two days consistented of 104 lectures spread between four conference rooms.  It was hectic swapping rooms with 2,500 people every few minutes.  I'll share some of the highlights.    
 
 ---
 
@@ -57,10 +57,10 @@ The last two days consistented of four concurrent lecture tracks.  It was hectic
 <br>
 
 - R is a data analysis language, not a high performance deployment language like C.  
-
 <br>
 
 - R should be treated like a prototyping language.  
+
 <br>
 
 - Production application deployment should be done in a more appropriate language using models that were proven in R. 
@@ -76,7 +76,7 @@ background-size: 8%
 <br>
 <br>
 
-The modeling workshop mostly highlighted the new `tidymodels` package created by Max Kuhn.  
+The modeling workshop mostly highlighted the new <font color="red">`tidymodels`</font> package created by Max Kuhn.  
 
 --
 <br>
@@ -98,7 +98,7 @@ This is the basic workflow to create a model using the tidymodels package.
 .center[<img src="images/tidymodels.png" alt="tidymodels" width="70%">]
 
 
-
+<!--
 ---
 
 ## Predictive Modeling Process:
@@ -113,6 +113,7 @@ This is the basic workflow to create a model using the tidymodels package.
 
 <b>Predictive modeling should be considered a marathon, not a short sprint. </b>
 
+-->
 ---
 
 ## How do we "spend" data? 
